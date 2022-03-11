@@ -57,9 +57,9 @@ function WorldInfoTable(props) {
             <table className="container">
                 <thead>
                 <tr>
-                    <th><h1>World Number</h1></th>
-                    <th><h1>Hits</h1></th>
-                    <th><h1>Stream Order</h1></th>
+                    <th className='world-number-header'><h1>World Number</h1></th>
+                    <th className='hits-header'><h1>Hits</h1></th>
+                    <th className='stream-order-header'><h1>Stream Order</h1></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -70,12 +70,6 @@ function WorldInfoTable(props) {
             </table>
         )
     }
-
-    // return (
-    //     <div>
-    //         <WorldInfoRow worldNumber={1}/>
-    //     </div>
-    // )
 }
 
 export default WorldInfoTable;

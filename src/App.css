@@ -21,7 +21,7 @@ h1 {
 .container th h1 {
   font-weight: bold;
   font-size: 1em;
-  text-align: left;
+  /*text-align: left;*/
   color: #9ee5f5;
 }
 
@@ -40,6 +40,7 @@ h1 {
   margin: 0 auto;
   display: table;
   padding: 0 0 8em 0;
+  max-width: 80vmin;
 }
 
 .container td, .container th {
@@ -61,6 +62,7 @@ h1 {
 .container th {
   background-color: #262a35;
   font-size: 130%;
+  padding-left: 0%;
 }
 
 .container td:first-child {
@@ -73,4 +75,26 @@ h1 {
   -webkit-box-shadow: 0 6px 6px -6px #0E1119;
   -moz-box-shadow: 0 6px 6px -6px #0E1119;
   box-shadow: 0 6px 6px -6px #0E1119;
+}
+
+.world-number-header h1 {
+  text-align: left;
+  padding-left: 10%;
+}
+
+.hits-header h1 {
+  text-align: center;
+}
+
+.stream-order-header h1 {
+  text-align: right;
+  padding-right: 10%;
+}
+
+.gggbbb-class {
+  color: rgba(100, 255, 100, 0.85);
+}
+
+.bbbggg-class {
+  color: #6985ff;
 }
