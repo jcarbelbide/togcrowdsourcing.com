@@ -10,7 +10,7 @@ export const StyledMenu = styled.nav`
   text-align: left;
   padding: 4rem;
   padding-top: 5rem;
-  gap: 4rem;
+  gap: 2rem;
   position: absolute;
   top: 0;
   left: 0;
@@ -22,11 +22,12 @@ export const StyledMenu = styled.nav`
     }
 
   a {
-    font-size: 2rem;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.5rem;
     //text-transform: uppercase;
     padding: 2rem 0;
     font-weight: bold;
-    letter-spacing: 0.5rem;
+    //letter-spacing: 0.5rem;
     color: ${({ theme }) => theme.primaryDark};
     text-decoration: none;
     transition: color 0.3s linear;

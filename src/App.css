@@ -103,3 +103,21 @@ h1 {
   display: flex;
   flex-direction: column;
 }
+
+.git-icon {
+  position: relative;
+  top: 0.5rem;
+  right: 0.8rem;
+  height: 50%;
+  width: auto;
+}
+
+.cloud-icon {
+  position: relative;
+  right: 0.8rem;
+}
+
+.arrow {
+  position: relative;
+  left: 1.5rem;
+}

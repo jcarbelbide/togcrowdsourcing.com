@@ -16,12 +16,16 @@ const Menu = ({ open, ...props }) => {
 
             </a>
             <a href="https://github.com/jcarbelbide/tog-crowdsourcing-server" tabIndex={tabIndex}>
-                <span aria-hidden="true"></span>
+                <span className={'cloud-icon'} aria-hidden="true">☁</span>
                 API
+                <span className='arrow'>></span>
             </a>
             <a href="https://github.com/jcarbelbide/tog-crowdsourcing" tabIndex={tabIndex}>
-                <span aria-hidden="true"></span>
+                <span aria-hidden="true">
+                    <img className={'git-icon'} src={require('../../../dependencies/GitHub-Mark-64px.png')}></img>
+                </span>
                 Git
+                <span className='arrow'>></span>
             </a>
         </StyledMenu>
     )
