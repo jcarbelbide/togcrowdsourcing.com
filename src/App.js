@@ -3,7 +3,8 @@ import WorldInfoTable from "./components/WorldInfoTable";
 import Title from "./components/Title";
 import Footer from "./components/Footer";
 import React, {useEffect, useState} from "react";
-import compare from "./dependencies/util";
+import {compare} from "./dependencies/util";
+import NavBar from "./components/NavBar/NavBar";
 
 function App() {
     const [error, setError] = useState(null)
@@ -33,6 +34,7 @@ function App() {
         return (
             <div className="App">
                 {/*<Title className="app-title"/>*/}
+                <NavBar classNamge='navbar' isLoaded={isLoaded}/>
                 <WorldInfoTable className="world-info-table" jsonItems={jsonItems}/>
                 {/*<Footer className="app-footer"/>*/}
             </div>

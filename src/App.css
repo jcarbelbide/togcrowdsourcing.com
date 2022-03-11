@@ -8,6 +8,7 @@ body {
   color:#d4bfa4;
   background-color:#262a35;
   margin: 20px;
+  height: 100%;
 }
 
 h1 {
@@ -21,7 +22,6 @@ h1 {
 .container th h1 {
   font-weight: bold;
   font-size: 1em;
-  /*text-align: left;*/
   color: #9ee5f5;
 }
 
@@ -97,4 +97,9 @@ h1 {
 
 .bbbggg-class {
   color: #6985ff;
+}
+
+.navbar {
+  display: flex;
+  flex-direction: column;
 }
