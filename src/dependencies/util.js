@@ -21,6 +21,25 @@ function compare(a, b) {
             return -1
         }
     }
+    if (b.stream_order === "gggbbb") {
+        if (a.stream_order === "gggbbb") {
+            return 0
+        }
+        else {
+            return 1
+        }
+    }
+    if (b.stream_order === "bbbggg") {
+        if (a.stream_order === "gggbbb") {
+            return -1
+        }
+        else if (a.stream_order === "bbbggg") {
+            return 0
+        }
+        else {
+            return 1
+        }
+    }
     return a.world_number - b.world_number
 }
 
