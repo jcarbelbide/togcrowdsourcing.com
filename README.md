@@ -1,70 +1,17 @@
-# Getting Started with Create React App
+# Tears of Guthix Crowdsourcing
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Thanks for checking out this repo! This particular repo consists of the website component of ToG Crowdsourcing, but I will use it as the central repo to talk about this project and describe the technical challenges that I encountered. 
 
-## Available Scripts
+ToG Crowdsourcing was made to try to help save everyone time during the beginning of the week when servers have reset, and the optimal Tears of Guthix world is unknown. ToG Crowdsourcing will collect data about each world to help all users find the optimal one each week, without having to hop to each world to find it themselves. 
 
-In the project directory, you can run:
+There is a RuneLite plugin (written in Java) that is responsible for collecting the data. That plugin then submits a post request to [togcrowdsourcing.com/worldinfo](https://togcrowdsourcing.com/worldinfo) with the collected data. The plugin also has a UI that shows the crowdsourced data that it gets using a GET request to the URL mentioned previously. The RuneLite plugin can be found at the following repo: [https://github.com/jcarbelbide/tog-crowdsourcing](https://github.com/jcarbelbide/tog-crowdsourcing)
 
-### `npm start`
+For mobile players or players that do not use RuneLite, the website with the same data can be viewed at [togcrowdsourcing.com](https://togcrowdsourcing.com). 
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The backend server that handles the requests can be found at the following repo: [https://github.com/jcarbelbide/tog-crowdsourcing-server](https://github.com/jcarbelbide/tog-crowdsourcing-server). The server is written in Go, utilizes SQLite for the database, and hashes all user related data using SHA256. TODO Finish this section out
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Once a week, the Old School RuneScape servers will reset, and a new optimal world(s) will be randomly selected. Because of this, the data from the week prior becomes outdated, and is cleared. The weekly reset is detected through a binary web socket protocol called JS5, which is a proprietary protocol developed by Jagex to download game assets on client PCs. Once the JS5 connection is established, a dummy message is sent every 5 seconds to see when the connection is broken. The connection will not be broken until the servers shut down or restart. Information about the last time the Old School RuneScape servers restarted can be found at [togcrowdsourcing.com/lastreset](https://togcrowdsourcing.com/lastreset). The GitHub repo for this Old School Runescape server monitor can be found at [https://github.com/jcarbelbide/js5-monitor](https://github.com/jcarbelbide/js5-monitor).
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+An interesting issue I came across when designing the backend was trying to reduce the amount of malicious requests I would get to my server. I did look into using Bcrypt, but since I am not saving any user data that can be used as a key (username or id), it was impractical to store a unique salt with each key. Doing so would have meant that every time TODO finish talking about this
+[Code I am referring to with comments to further clarify issue.](https://github.com/jcarbelbide/tog-crowdsourcing-server/blob/main/src/util.go#L51)
