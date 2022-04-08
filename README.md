@@ -64,9 +64,10 @@ I know RuneScape users are very cautious when it comes to their IP address (for 
 
 The one piece of data we are collecting that could possibly compromise the user's security is their IP address. It is unlikely that an IP address alone would be enough to cause harm to the user in the event of a leak, but coupled with the fact that we are also storing the user's world number, I can think of some scenarios where the data can be useful to a malicious actor. 
 
-For example, if the IP address of someone is already known, they can figure out which worlds they tend to go on. If a user has a "home" world or worlds that they tend to connect to, this information could be found by looking at the aggregated IP address + world data. Users may also connect to certain worlds because of low ping. If this is the case, a malicious actor could deduce a general location of the user with this information. 
+For example, if the IP address of someone is already known and the database of IPs is leaked, they can figure out which worlds they tend to go on. If a user has a "home" world or worlds that they tend to connect to, this information could be found by looking at the aggregated IP address + world data. That information can then be used to more easily find players in game and possibly harass or attack them in PvP areas. 
+Users may also connect to certain worlds because of low ping. If this is the case, a malicious actor could deduce a general location of the user with this information. 
 
-These are only the scenarios I can think of, and I am sure there are others. I would prefer to try my best to keep IPs private for the aforementioned reasons, and to give users peace of mind that I do not intend to do anything with the data I collect for my own, or anyone else's personal gain. 
+These are only the scenarios I can think of, and I am sure there are others. I would prefer to try my best to keep IPs private for the aforementioned reasons, and to give users peace of mind that I do not intend to do anything with the data I collect for my own, or anyone else's personal gain. In truth, probably the biggest reason to protect IP information is that OldSchool Runescape players are extremely security conscious, and I believe they would not be willing to use the plugin if I collected their actual IPs. 
 
 So on to how we try to protect the IPs.
 
@@ -86,7 +87,6 @@ I did look into using the bcrypt library, since it is much more secure and much 
 This would become slower as more IPs are added (O(N)). I wanted an O(1) (or near O(1)) lookup so that I don't experience any slowdowns in request handling. 
 
 Normally, with a username + password combo, when a request with a username and password comes in, the username is looked up in the database. The username is associated with a hashed password, which is stored with the random salt. The password from the request is salted with the salt on the database, and if the hashes match, then the user is granted access. 
-
 Now imagine doing this without the username. If we could somehow guarantee that every password in a database is unique, then if a request comes in with a password, we would have to check every single hash+salt in the database until a match is found. This would be very susceptible to DOS attacks because there is so much processing going on. This is especially true for my server, since I am not using a message queue. 
 
 I think my solution strikes a good middle ground between processing time and security. In reality, my lookup is not O(1), but it is O(logn). The hash is a primary key, which means it is indexed and efficient to look up, but it is still a B-Tree structure, that requires O(log n) time to lookup. 
@@ -99,17 +99,48 @@ The RuneLite plugin I created submits a post request to [togcrowdsourcing.com/wo
 
 <h3>How do we know when the weekly server reset happens and the collected data must be reset?</h3>
 
+This was probably the most difficult problem I encountered during this entire project. Once a week, the Old School RuneScape servers will reset, and a new optimal world(s) will be randomly selected. Because of this, the data from the week prior becomes outdated, and must be cleared. 
+
+I had a few ideas on how to handle this including:
+
+1. Manually resetting it every week.
+2. Scraping the OldSchool RuneScape website for when the weekly update article is pushed out. I would have to identify the weekly article among other articles. 
+3. Reset the data when "large amounts" of conflicting data is present on the database. 
+4. Establish some sort of connection to the Old School RuneScape servers and check for when that connection is broken. 
+
+Obviously, method 1 is far from ideal. 
+
+Method 2 I felt would have been difficult to get consistent, and still relies on human input (whoever at Jagex (the company) posts the blogpost). 
+
+Method 3 felt a bit hacky to me, and I don't believe it was the idea way to handle this. If I went this route, I would have to define how much a "large amount" of conflicting data meant, and that definition would likely change as the plugin gained more users. It would also be susceptible to trolls. Trolls could reset data if they are able to trick my server into thinking a reset occured. 
+
+Method 4 felt like the "right way" to solve this problem. There seemed to be little downsides to this method, the only I can think of being that the connection could break randomly in the middle of the week. This method was suggested by another more experienced RuneLite developer named [Abex](https://github.com/abextm). He and the other RuneLite developers were incredibly helpful in pointing me in the right direction for this part of the project. 
+
+The solution they suggested was to keep a "JS5" connection with any of the OldSchool RuneScape worlds and ping the connection once in a while. If the connection is broken, the worlds have likely reset. JS5 is a proprietary binary socket protocol developed by Jagex. It is used to download game assets to client PCs. There is no authentication required for the connection, so it is easy to establish. 
+
+By reading some online blogs about the JS5 protocol, asking the other developers about it, and looking at existing code that uses the JS5 connection, I was able to figure out how to establish and keep a connection to the RuneScape servers. 
+
+This method worked out fairly well. The connection is always broken upon a server reset, which is exactly what we want. The only downside is that occasionally, the connection will break for currently unknown reasons, and my backend will reset the database. This does not happen often enough to hamper the user experience too much. Usually, users will find the optimal world fairly quickly, since the plugin automates all of the data collection and data storing. 
+
+I am still looking into whether the servers are actually resetting in the middle of the week, or if it is just the connection that is resetting.
+
+Information about the last time the Old School RuneScape servers restarted can be found at [togcrowdsourcing.com/lastreset](https://togcrowdsourcing.com/lastreset).
+
+
 <h3>How do we minimize server load and costs?</h3>
+
+Some of the previous sections talk about minimizing server load. This has to do with mostly writing an efficient backend and avoiding expensive processing. I have also placed the server behind CloudFlare to add some protection against malicious attacks, namely DDOS attacks. 
+
+To reduce costs, I am running on a single AWS Lightsail Linux instance, and using Nginx as a reverse proxy to route traffic to my various backends. All of this is running on a single server, so costs are low. Lightsail offers very predictable pricing, and costs have never been more than a few dollars a month. 
+
 
 <h3>How do we avoid malicious requests to our server?</h3>
 
+This was touched on in the previous sections, but the malicious requests we want to avoid are:
 
+1. DDOS attacks
+2. Postman trolls
 
+To mitigate DDOS, I have placed the server behind CloudFlare. 
 
-
-
-Once a week, the Old School RuneScape servers will reset, and a new optimal world(s) will be randomly selected. Because of this, the data from the week prior becomes outdated, and is cleared. The weekly reset is detected through a binary web socket protocol called JS5, which is a proprietary protocol developed by Jagex to download game assets on client PCs. Once the JS5 connection is established, a dummy message is sent every 5 seconds to see when the connection is broken. The connection will not be broken until the servers shut down or restart. Information about the last time the Old School RuneScape servers restarted can be found at [togcrowdsourcing.com/lastreset](https://togcrowdsourcing.com/lastreset). The GitHub repo for this Old School Runescape server monitor can be found at [https://github.com/jcarbelbide/js5-monitor](https://github.com/jcarbelbide/js5-monitor).
-
-
-An interesting issue I came across when designing the backend was trying to reduce the amount of malicious requests I would get to my server. I did look into using Bcrypt, but since I am not saving any user data that can be used as a key (username or id), it was impractical to store a unique salt with each key. Doing so would have meant that every time TODO finish talking about this
-[Code I am referring to with comments to further clarify issue.](https://github.com/jcarbelbide/tog-crowdsourcing-server/blob/main/src/util.go#L51)
+I am defining a Postman troll as someone who sends POST requests to my server with false data in order to skew the real data. We can't really prevent them from sending malicious requests, but we can reduce the amount of POST requests our backend will process from any one IP, which is what we are doing. 
