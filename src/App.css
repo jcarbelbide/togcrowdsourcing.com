@@ -121,3 +121,9 @@ h1 {
   position: relative;
   left: 1.5rem;
 }
+
+.world-flag {
+  height: 1em;
+  vertical-align: middle;
+  margin-right: 0.4em;
+}

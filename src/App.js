@@ -5,11 +5,13 @@ import Footer from "./components/Footer";
 import React, {useEffect, useState} from "react";
 import {compare} from "./dependencies/util";
 import NavBar from "./components/NavBar/NavBar";
+import fetchWorldFlags from "./dependencies/wikiWorldFlags";
 
 function App() {
     const [error, setError] = useState(null)
     const [isLoaded, setIsLoaded] = useState(false)
     const [jsonItems, setJsonItems] = useState([])
+    const [flags, setFlags] = useState(new Map())
 
     useEffect(() => {
         fetch("https://togcrowdsourcing.com/worldinfo")
@@ -21,6 +23,8 @@ function App() {
                 setIsLoaded(true)
                 setError(error)
             })
+        // Independent of the world data: if the wiki is down we still show the table, just without flags.
+        fetchWorldFlags().then(setFlags)
     }, [])
 
     if (error) {
@@ -35,7 +39,7 @@ function App() {
             <div className="App">
                 {/*<Title className="app-title"/>*/}
                 <NavBar classNamge='navbar' isLoaded={isLoaded}/>
-                <WorldInfoTable className="world-info-table" jsonItems={jsonItems}/>
+                <WorldInfoTable className="world-info-table" jsonItems={jsonItems} flags={flags}/>
                 {/*<Footer className="app-footer"/>*/}
             </div>
         );
