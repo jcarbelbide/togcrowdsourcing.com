@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import WorldInfoRow from "./WorldInfoRow";
 
 function WorldInfoTable(props) {
     let jsonItems = props.jsonItems
+    let flags = props.flags || new Map()
 
     if (jsonItems == null || jsonItems.length === 0) {
         return (
-            getTable([{
+            getTable(flags, [{
                 world_number: '-',
                 hits: '-',
                 stream_order: 'No data!'
@@ -15,12 +16,12 @@ function WorldInfoTable(props) {
     }
     else {
         return (
-            getTable(jsonItems)
+            getTable(flags, jsonItems)
         )
     }
 }
 
-function getTable(jsonItems) {
+function getTable(flags, jsonItems) {
     return (
         <table className="container">
             <thead>
@@ -32,7 +33,7 @@ function getTable(jsonItems) {
             </thead>
             <tbody>
             {jsonItems.map( (item, index) => (
-                <WorldInfoRow world_number={item.world_number} hits={item.hits} stream_order={item.stream_order} rowClass={index % 2 === 0 ? "even-row" : "odd-row"}/>
+                <WorldInfoRow key={item.world_number} flag={flags.get(item.world_number)} world_number={item.world_number} hits={item.hits} stream_order={item.stream_order} rowClass={index % 2 === 0 ? "even-row" : "odd-row"}/>
             ))}
             </tbody>
         </table>

@@ -10,7 +10,16 @@ function WorldInfoRow(props) {
     }
     return (
         <tr className={props.rowClass}>
-            <td> {props.world_number} </td>
+            <td>
+                {props.flag && (
+                    <img className="world-flag"
+                         src={props.flag.flagUrl}
+                         alt={props.flag.location}
+                         title={props.flag.location}
+                         onError={e => { e.currentTarget.hidden = true }}/>
+                )}
+                {props.world_number}
+            </td>
             <td> {props.hits} </td>
             <td className={streamOrderClass}> {props.stream_order} </td>
         </tr>

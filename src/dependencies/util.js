@@ -1,46 +1,13 @@
 import { useState, useEffect } from 'react';
 
+const STREAM_ORDER_RANK = {gggbbb: 0, bbbggg: 1}
+
+// gggbbb worlds first, then bbbggg, then everything else; most hits first
+// within a group; world number as the final tiebreaker.
 function compare(a, b) {
-    // console.log(a.stream_order, b.stream_order, a.stream_order > b.stream_order)
-    if (a.stream_order === "gggbbb") {
-        if (b.stream_order === "gggbbb") {
-            return 0
-        }
-        else {
-            return -1
-        }
-    }
-    if (a.stream_order === "bbbggg") {
-        if (b.stream_order === "gggbbb") {
-            return 1
-        }
-        else if (b.stream_order === "bbbggg") {
-            return 0
-        }
-        else {
-            return -1
-        }
-    }
-    if (b.stream_order === "gggbbb") {
-        if (a.stream_order === "gggbbb") {
-            return 0
-        }
-        else {
-            return 1
-        }
-    }
-    if (b.stream_order === "bbbggg") {
-        if (a.stream_order === "gggbbb") {
-            return -1
-        }
-        else if (a.stream_order === "bbbggg") {
-            return 0
-        }
-        else {
-            return 1
-        }
-    }
-    return a.world_number - b.world_number
+    const rankA = STREAM_ORDER_RANK[a.stream_order] ?? 2
+    const rankB = STREAM_ORDER_RANK[b.stream_order] ?? 2
+    return rankA - rankB || b.hits - a.hits || a.world_number - b.world_number
 }
 
 const useOnClickOutside = (ref, handler) => {
