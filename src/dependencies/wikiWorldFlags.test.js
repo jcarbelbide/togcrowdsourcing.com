@@ -5,10 +5,13 @@ test("parses WorldLine entries and skips junk", () => {
     const flags = parseWorldFlags(
         "{{WorldLine|301|United States (east)|mems=no|Trade}}\n" +
         "{{WorldLine|303|Germany|mems=yes}}\n" +
-        "{{WorldLine|abc|Nowhere|mems=yes}}\n" +
-        "{{WorldLine|305||mems=yes}}"
+        "{{WorldLine| 306 | United States (west) |mems=yes}}\n" +
+        "{{WorldLine|305||mems=yes}}\n" +
+        "<!-- {{WorldLine|746|Germany|mems=league}} -->"
     )
-    expect(flags.size).toBe(2)
+    expect(flags.size).toBe(3)
+    expect(flags.get(306).location).toBe("United States (west)")
+    expect(flags.has(746)).toBe(false)
     expect(flags.get(301)).toEqual({
         location: "United States (east)",
         flagUrl: "https://oldschool.runescape.wiki/images/United_States_(east)_flag.png",

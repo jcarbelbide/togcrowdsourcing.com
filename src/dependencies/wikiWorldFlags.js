@@ -4,7 +4,8 @@ const WIKI_WORLD_PAGE_URL =
     "https://oldschool.runescape.wiki/api.php?action=parse&page=World&prop=wikitext&format=json&origin=*"
 const WIKI_IMAGE_BASE_URL = "https://oldschool.runescape.wiki/images/"
 
-const WORLD_LINE_REGEX = /\{\{WorldLine\|(\d+)\|([^|}]+)/g
+const WORLD_LINE_REGEX = /\{\{WorldLine\s*\|\s*(\d+)\s*\|([^|}]+)/g
+const HTML_COMMENT_REGEX = /<!--[\s\S]*?-->/g
 
 function flagUrlForLocation(location) {
     return WIKI_IMAGE_BASE_URL + encodeURIComponent(location.replace(/ /g, "_") + "_flag.png")
@@ -16,10 +17,12 @@ function parseWorldFlags(wikitext) {
     if (typeof wikitext !== "string") {
         return flags
     }
-    for (const match of wikitext.matchAll(WORLD_LINE_REGEX)) {
+    // Retired worlds are left in the page as commented-out lines; ignore them.
+    const liveWikitext = wikitext.replace(HTML_COMMENT_REGEX, "")
+    for (const match of liveWikitext.matchAll(WORLD_LINE_REGEX)) {
         const worldNumber = Number(match[1])
         const location = match[2].trim()
-        if (!Number.isInteger(worldNumber) || !location) {
+        if (!location) {
             continue
         }
         flags.set(worldNumber, {location, flagUrl: flagUrlForLocation(location)})
@@ -43,5 +46,5 @@ async function fetchWorldFlags() {
     }
 }
 
-export {parseWorldFlags, flagUrlForLocation}
+export {parseWorldFlags}
 export default fetchWorldFlags

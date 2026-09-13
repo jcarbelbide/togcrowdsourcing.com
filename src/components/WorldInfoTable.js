@@ -3,7 +3,7 @@ import WorldInfoRow from "./WorldInfoRow";
 
 function WorldInfoTable(props) {
     let jsonItems = props.jsonItems
-    let flags = props.flags || new Map()
+    let flags = props.flags
 
     if (jsonItems == null || jsonItems.length === 0) {
         return (
